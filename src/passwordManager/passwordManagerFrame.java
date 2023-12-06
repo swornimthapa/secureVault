@@ -1,13 +1,22 @@
 package passwordManager;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.UnsupportedEncodingException;
+import java.security.*;
 import java.sql.*;
-import java.security.SecureRandom;
+import java.util.Arrays;
+import java.util.Base64;
+
 import UI_elements.RoundedButton;
 import UI_elements.RoundedLabel;
 import UI_elements.RoundedPanel;
@@ -19,7 +28,7 @@ public class passwordManagerFrame implements ActionListener {
     JButton saveButton;
     JButton showAllButton;
     JButton btnNewButton;
-    JButton findLabel;
+    JButton findButton;
     RoundedButton generateButton;
     JTextField findtextfield;
     JTextField servicesTextfiled;
@@ -135,14 +144,14 @@ public class passwordManagerFrame implements ActionListener {
 
 
 
-        findLabel = new RoundedButton("Find",30);
-        findLabel.setBounds(500, 200, 100, 30);
-        findLabel.setFont(new Font("Times New Roman", Font.TYPE1_FONT, 15));
-        findLabel.setForeground(Color.white);
-        findLabel.setBackground(Color.decode("#00563E"));
-        findLabel.setBorder(BorderFactory.createLineBorder(Color.decode("#013221")));
-
-        frame.getContentPane().add(findLabel);
+        findButton = new RoundedButton("Find",30);
+        findButton.setBounds(500, 200, 100, 30);
+        findButton.setFont(new Font("Times New Roman", Font.TYPE1_FONT, 15));
+        findButton.setForeground(Color.white);
+        findButton.setBackground(Color.decode("#00563E"));
+        findButton.setBorder(BorderFactory.createLineBorder(Color.decode("#013221")));
+        findButton.addActionListener(this);
+        frame.getContentPane().add(findButton);
 
         showAllButton = new RoundedButton("Show All",30);
         showAllButton.setBounds(630, 200, 100, 30);
@@ -150,7 +159,7 @@ public class passwordManagerFrame implements ActionListener {
         showAllButton.setForeground(Color.white);
         showAllButton.setBackground(Color.decode("#00563E"));
         showAllButton.setBorder(BorderFactory.createLineBorder(Color.decode("#013221")));
-
+        showAllButton.addActionListener(this);
         frame.getContentPane().add(showAllButton);
 
 
@@ -188,6 +197,117 @@ public class passwordManagerFrame implements ActionListener {
         if (e.getSource() == generateButton) {
             generateRandomPassword();
         }
+
+        if(e.getSource() == findButton){
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                String url = "jdbc:mysql://localhost/securevault";
+                Connection connection = (Connection) DriverManager.getConnection(url, "root", "Sw@mysql001");
+
+                PreparedStatement st = connection.prepareStatement("SELECT services, servicespassword FROM servicestable WHERE susername=? AND suserpassword=? AND services=?");
+                st.setString(1, username);
+                st.setString(2, password);
+                st.setString(3,  findtextfield.getText());
+                ResultSet resultSet = st.executeQuery();
+                selectedtableModel.setRowCount(0);
+
+                // Populate the table model with data from the result set
+                while (resultSet.next()) {
+                    String service = resultSet.getString("services");
+                    String userPassword = resultSet.getString("servicespassword");
+                    selectedtableModel.addRow(new Object[]{service, userPassword});
+                }
+
+                // Set the updated model to the table
+                selectedfiledetailstable.setModel(selectedtableModel);
+
+                // Close the result set and statement
+                resultSet.close();
+                st.close();
+            } catch (ClassNotFoundException ex) {
+                throw new RuntimeException(ex);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+
+        }
+
+        if (e.getSource() == showAllButton) {
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                String url = "jdbc:mysql://localhost/securevault";
+                Connection connection = (Connection) DriverManager.getConnection(url, "root", "Sw@mysql001");
+                PreparedStatement st = connection.prepareStatement("SELECT services, servicespassword FROM servicestable WHERE susername=? AND suserpassword=?");
+                st.setString(1, username);
+                st.setString(2, password);
+
+                ResultSet resultSet = st.executeQuery();
+
+                // Clear existing data in the table model
+                selectedtableModel.setRowCount(0);
+                // Populate the table model with data from the result set
+                while (resultSet.next()) {
+                    String service = resultSet.getString("services");
+                    String userPassword = resultSet.getString("servicespassword");
+
+
+
+                    //decrypting userPassword
+                    String keyString = password;
+
+
+                    // Generate a valid 256-bit AES key from the key string
+                    byte[] keyBytes = keyString.getBytes("UTF-8");
+                    MessageDigest sha = MessageDigest.getInstance("SHA-256");
+                    keyBytes = sha.digest(keyBytes);
+                    keyBytes = Arrays.copyOf(keyBytes, 32); // 256 bits = 32 bytes
+
+// Create a secret key specification from the key bytes
+                    Key secretKey = new SecretKeySpec(keyBytes, "AES");
+
+                    Cipher cipher = Cipher.getInstance("AES");
+                    cipher.init(Cipher.DECRYPT_MODE, secretKey);
+
+// Decrypt the password
+                    System.out.println("Encoded Password from Database: " + userPassword);
+                    byte[] decryptedPasswordBytes = cipher.doFinal(Base64.getDecoder().decode(userPassword));
+
+                    selectedtableModel.addRow(new Object[]{service, new String(decryptedPasswordBytes, "UTF-8")});
+
+
+
+
+//                    selectedtableModel.addRow(new Object[]{service, userPassword});
+                }
+                // Set the updated model to the table
+                selectedfiledetailstable.setModel(selectedtableModel);
+
+                // Close the result set and statement
+                resultSet.close();
+                st.close();
+            } catch (ClassNotFoundException ex) {
+                throw new RuntimeException(ex);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            } catch (UnsupportedEncodingException ex) {
+                throw new RuntimeException(ex);
+            } catch (NoSuchPaddingException ex) {
+                throw new RuntimeException(ex);
+            } catch (NoSuchAlgorithmException ex) {
+                throw new RuntimeException(ex);
+            } catch (InvalidKeyException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalBlockSizeException ex) {
+                throw new RuntimeException(ex);
+            } catch (BadPaddingException ex) {
+                throw new RuntimeException(ex);
+            }
+
+        }
+
+
+
+
         if (e.getSource() == saveButton) {
 //            System.out.println(username);
 //            System.out.println(password);
@@ -201,9 +321,33 @@ public class passwordManagerFrame implements ActionListener {
                     String url = "jdbc:mysql://localhost/securevault";
                     Connection connection = (Connection) DriverManager.getConnection(url, "root", "Sw@mysql001");
 
+
+//                    String keyString = serverframe.getSendingsecretkey();
+                    String keyString = password;
+//                                System.out.println(serverframe.getSendingsecretkey());
+
+//                     Generate a valid 256-bit AES key from the key string
+                    byte[] keyBytes = keyString.getBytes("UTF-8");
+                    MessageDigest sha = MessageDigest.getInstance("SHA-256");
+                    keyBytes = sha.digest(keyBytes);
+                    keyBytes = Arrays.copyOf(keyBytes, 32); // 256 bits = 32 bytes
+
+                    // Create a secret key specification from the key bytes
+                    Key secretKey = new SecretKeySpec(keyBytes, "AES");
+//                                System.out.println(secretKey);
+
+                    Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+                    cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+
+                    // Encrypt the generated password
+                    byte[] generatedPasswordBytes = cipher.doFinal(generatedPassword.getText().getBytes("UTF-8"));
+
+                    // Convert the encrypted bytes to Base64 for storage
+                    String encryptedPassword = Base64.getEncoder().encodeToString(generatedPasswordBytes);
+
                     PreparedStatement st = connection.prepareStatement("INSERT INTO servicestable (services, servicespassword, susername, suserpassword) VALUES (?, ?, ?, ?)");
                     st.setString(1, servicesTextfiled.getText());    // Assuming servicesTextfiled.getText() is the value for sername
-                    st.setString(2, generatedPassword.getText());     // Assuming generatedPassword.getText() is the value for servicespassword
+                    st.setString(2, encryptedPassword);     // Assuming generatedPassword.getText() is the value for servicespassword
                     st.setString(3, username);                         // Assuming username is the value for susername
                     st.setString(4, password);                         // Assuming password is the value for suserpassword
                     int rowsAffected  = st.executeUpdate();
@@ -218,6 +362,18 @@ public class passwordManagerFrame implements ActionListener {
                     throw new RuntimeException(ex);
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
+                } catch (UnsupportedEncodingException ex) {
+                    throw new RuntimeException(ex);
+                } catch (NoSuchPaddingException ex) {
+                    throw new RuntimeException(ex);
+                } catch (NoSuchAlgorithmException ex) {
+                    throw new RuntimeException(ex);
+                } catch (InvalidKeyException ex) {
+                    throw new RuntimeException(ex);
+                } catch (IllegalBlockSizeException ex) {
+                    throw new RuntimeException(ex);
+                } catch (BadPaddingException ex) {
+                    throw new RuntimeException(ex);
                 }
             }
 
@@ -226,20 +382,6 @@ public class passwordManagerFrame implements ActionListener {
     }
 
     private void generateRandomPassword() {
-//        int minLength = 8;
-//        int maxLength = 15;
-//
-//        int randomStrLength = (int) (Math.random() * (maxLength - minLength + 1)) + minLength;
-//        char[] possibleCharacters = (new String("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~`!@#$%^&*()-_=+[{]}\\|;:\'\",<.>/?")).toCharArray();
-//        SecureRandom random = new SecureRandom();
-//        StringBuilder randomStr = new StringBuilder(randomStrLength);
-//        for (int i = 0; i < randomStrLength; i++) {
-//            randomStr.append(possibleCharacters[random.nextInt(possibleCharacters.length)]);
-//        }
-//        System.out.println("random password is : " + randomStr.toString());
-//        System.out.println();
-//        generatedPassword.setText(randomStr.toString());
-
         int minLength = 8;
         int maxLength = 15;
 

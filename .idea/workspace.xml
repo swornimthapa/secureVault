@@ -5,12 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c4854e5d-1ab2-4c77-890e-c8de05fa1f3a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/lib/mysql-connector-j-8.0.32.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/secureVault.iml" beforeDir="false" afterPath="$PROJECT_DIR$/secureVault.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Dashboard/dashboardFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Dashboard/dashboardFrame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/fileEncryption/fileEncryptionFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/fileEncryption/fileEncryptionFrame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/login/loginFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/login/loginFrame.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/passwordManager/passwordManagerFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/passwordManager/passwordManagerFrame.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -34,7 +29,7 @@
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "C:/Users/Lenovo/Desktop/secureVault/lib/mysql-connector-j-8.0.32.jar",
+    "last_opened_file_path": "D:/BIT-swornim/BIT 4th sem/java/java4thsem/AES-encryption",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0"
@@ -55,5 +50,16 @@
       <updated>1701833334749</updated>
     </task>
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>
