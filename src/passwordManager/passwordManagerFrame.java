@@ -215,7 +215,30 @@ public class passwordManagerFrame implements ActionListener {
                 while (resultSet.next()) {
                     String service = resultSet.getString("services");
                     String userPassword = resultSet.getString("servicespassword");
-                    selectedtableModel.addRow(new Object[]{service, userPassword});
+//                    selectedtableModel.addRow(new Object[]{service, userPassword});
+
+                    //decrypting userPassword
+                    String keyString = password;
+
+
+                    // Generate a valid 256-bit AES key from the key string
+                    byte[] keyBytes = keyString.getBytes("UTF-8");
+                    MessageDigest sha = MessageDigest.getInstance("SHA-256");
+                    keyBytes = sha.digest(keyBytes);
+                    keyBytes = Arrays.copyOf(keyBytes, 32); // 256 bits = 32 bytes
+
+                    // Create a secret key specification from the key bytes
+                    Key secretKey = new SecretKeySpec(keyBytes, "AES");
+
+                    Cipher cipher = Cipher.getInstance("AES");
+                    cipher.init(Cipher.DECRYPT_MODE, secretKey);
+
+                    // Decrypt the password
+                    System.out.println("Encoded Password from Database: " + userPassword);
+                    byte[] decryptedPasswordBytes = cipher.doFinal(Base64.getDecoder().decode(userPassword));
+
+                    selectedtableModel.addRow(new Object[]{service, new String(decryptedPasswordBytes, "UTF-8")});
+
                 }
 
                 // Set the updated model to the table
@@ -227,6 +250,18 @@ public class passwordManagerFrame implements ActionListener {
             } catch (ClassNotFoundException ex) {
                 throw new RuntimeException(ex);
             } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            } catch (UnsupportedEncodingException ex) {
+                throw new RuntimeException(ex);
+            } catch (NoSuchPaddingException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalBlockSizeException ex) {
+                throw new RuntimeException(ex);
+            } catch (NoSuchAlgorithmException ex) {
+                throw new RuntimeException(ex);
+            } catch (BadPaddingException ex) {
+                throw new RuntimeException(ex);
+            } catch (InvalidKeyException ex) {
                 throw new RuntimeException(ex);
             }
 
@@ -245,11 +280,11 @@ public class passwordManagerFrame implements ActionListener {
 
                 // Clear existing data in the table model
                 selectedtableModel.setRowCount(0);
+
                 // Populate the table model with data from the result set
                 while (resultSet.next()) {
                     String service = resultSet.getString("services");
                     String userPassword = resultSet.getString("servicespassword");
-
 
 
                     //decrypting userPassword
@@ -262,19 +297,17 @@ public class passwordManagerFrame implements ActionListener {
                     keyBytes = sha.digest(keyBytes);
                     keyBytes = Arrays.copyOf(keyBytes, 32); // 256 bits = 32 bytes
 
-// Create a secret key specification from the key bytes
+                    // Create a secret key specification from the key bytes
                     Key secretKey = new SecretKeySpec(keyBytes, "AES");
 
                     Cipher cipher = Cipher.getInstance("AES");
                     cipher.init(Cipher.DECRYPT_MODE, secretKey);
 
-// Decrypt the password
+                    // Decrypt the password
                     System.out.println("Encoded Password from Database: " + userPassword);
                     byte[] decryptedPasswordBytes = cipher.doFinal(Base64.getDecoder().decode(userPassword));
 
                     selectedtableModel.addRow(new Object[]{service, new String(decryptedPasswordBytes, "UTF-8")});
-
-
 
 
 //                    selectedtableModel.addRow(new Object[]{service, userPassword});
