@@ -15,7 +15,7 @@ public class loginFrame implements ActionListener {
     JFrame frame = new JFrame("login");
     JButton btnNewButton;
     JTextField userTextfiled;
-    JTextField passwordTextfiled;
+    JPasswordField passwordTextfiled;
     RoundedButton loginButton;
     RoundedButton Register;
 
@@ -91,11 +91,12 @@ public class loginFrame implements ActionListener {
         frame.getContentPane().add(userTextfiled);
 
 
-        passwordTextfiled = new JTextField();
+        passwordTextfiled = new JPasswordField();
         passwordTextfiled.setFont(new Font("Times New Roman", Font.PLAIN, 15));
         passwordTextfiled.setBorder(BorderFactory.createLineBorder(Color.decode("#3D0C01")));
         passwordTextfiled.setBounds(310, 250, 210, 40);
         passwordTextfiled.setFont(new Font("Arial", Font.BOLD, 20));
+
         frame.getContentPane().add(passwordTextfiled);
 
 
@@ -156,6 +157,7 @@ public class loginFrame implements ActionListener {
         if (e.getSource() == Register) {
             String userName = userTextfiled.getText();
             String password = passwordTextfiled.getText();
+//            password.getChars(42);
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 String url = "jdbc:mysql://localhost/securevault";
