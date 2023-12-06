@@ -344,16 +344,13 @@ public class passwordManagerFrame implements ActionListener {
         if (e.getSource() == saveButton) {
 //            System.out.println(username);
 //            System.out.println(password);
-            if (generatedPassword.getText().isEmpty()) {
+            if (generatedPassword.getText().isEmpty() || servicesTextfiled.getText().isEmpty()) {
                 JOptionPane.showMessageDialog(btnNewButton, "Click the generate button, to generate the password");
             }else {
                 try {
-
-
                     Class.forName("com.mysql.cj.jdbc.Driver");
                     String url = "jdbc:mysql://localhost/securevault";
                     Connection connection = (Connection) DriverManager.getConnection(url, "root", "Sw@mysql001");
-
 
 //                    String keyString = serverframe.getSendingsecretkey();
                     String keyString = password;
@@ -378,19 +375,67 @@ public class passwordManagerFrame implements ActionListener {
                     // Convert the encrypted bytes to Base64 for storage
                     String encryptedPassword = Base64.getEncoder().encodeToString(generatedPasswordBytes);
 
-                    PreparedStatement st = connection.prepareStatement("INSERT INTO servicestable (services, servicespassword, susername, suserpassword) VALUES (?, ?, ?, ?)");
-                    st.setString(1, servicesTextfiled.getText());    // Assuming servicesTextfiled.getText() is the value for sername
-                    st.setString(2, encryptedPassword);     // Assuming generatedPassword.getText() is the value for servicespassword
-                    st.setString(3, username);                         // Assuming username is the value for susername
-                    st.setString(4, password);                         // Assuming password is the value for suserpassword
-                    int rowsAffected  = st.executeUpdate();
-                    if(rowsAffected > 0){
-                        JOptionPane.showMessageDialog(btnNewButton, "You have successfully saved the password");
+
+                    PreparedStatement st = (PreparedStatement) connection.prepareStatement("SELECT * FROM servicestable WHERE services=? AND susername=? AND suserpassword=?");
+                    st.setString(1, servicesTextfiled.getText());
+                    st.setString(2, username);
+                    st.setString(3, password);
+
+                    ResultSet rs = st.executeQuery();
+                    if (!rs.next()) {
+                        st = connection.prepareStatement("INSERT INTO servicestable (services, servicespassword, susername, suserpassword) VALUES (?, ?, ?, ?)");
+                        st.setString(1, servicesTextfiled.getText());    // Assuming servicesTextfiled.getText() is the value for sername
+                        st.setString(2, encryptedPassword);     // Assuming generatedPassword.getText() is the value for servicespassword
+                        st.setString(3, username);                         // Assuming username is the value for susername
+                        st.setString(4, password);                         // Assuming password is the value for suserpassword
+                        int rowsAffected  = st.executeUpdate();
+                        if(rowsAffected > 0){
+                            JOptionPane.showMessageDialog(btnNewButton, "You have successfully saved the password");
+                        }else {
+                            JOptionPane.showMessageDialog(btnNewButton, "Failed to save the password");
+                        }
+                        st.close();
+                        connection.close();
                     }else {
-                        JOptionPane.showMessageDialog(btnNewButton, "Failed to save the password");
+                        int option = JOptionPane.showOptionDialog(btnNewButton,
+                                "You already have a password for " + servicesTextfiled.getText() + ". Do you want to update it?",
+                                "Record Exists",
+                                JOptionPane.YES_NO_OPTION,
+                                JOptionPane.QUESTION_MESSAGE,
+                                null,
+                                new Object[]{"Update", "Cancel"},
+                                "Update");
+
+                        if (option == JOptionPane.YES_OPTION) {
+                            // User clicked "Update", perform the update here
+                            st = connection.prepareStatement("UPDATE servicestable SET services=?, servicespassword=?, susername=?, suserpassword=? WHERE services=? AND susername=? AND suserpassword=?");
+                            st.setString(1, servicesTextfiled.getText());    // Assuming servicesTextfiled.getText() is the updated value for services
+                            st.setString(2, encryptedPassword);             // Assuming encryptedPassword is the updated value for servicespassword
+                            st.setString(3, username);                      // Assuming username is the updated value for susername
+                            st.setString(4, password);                      // Assuming password is the updated value for suserpassword
+                            // The next three lines are for the WHERE clause to identify the row to be updated
+                            st.setString(5, servicesTextfiled.getText());
+                            st.setString(6, username);
+                            st.setString(7, password);                        // Assuming password is the value for suserpassword
+                            int rowsAffected  = st.executeUpdate();
+                            if(rowsAffected > 0){
+                                JOptionPane.showMessageDialog(btnNewButton, "You have successfully saved the password");
+                            }else {
+                                JOptionPane.showMessageDialog(btnNewButton, "Failed to save the password");
+                            }
+                            st.close();
+                            connection.close();
+
+                        } else {
+                            // User clicked "Cancel", you can handle it as needed
+                            JOptionPane.getRootFrame().dispose();
+                        }
+
+                        //here show a dialog box that say-> you already have a password for servicesTextfiled.getText() ,the dialog box should
+//                        contain update button->if pressed the database should be updated ...-> if dont update nothing should happen
                     }
-                    st.close();
-                    connection.close();
+
+
                 } catch (ClassNotFoundException ex) {
                     throw new RuntimeException(ex);
                 } catch (SQLException ex) {
