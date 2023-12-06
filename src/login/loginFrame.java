@@ -112,45 +112,45 @@ public class loginFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 
         if (e.getSource() == loginButton) {
-                    dashboardFrame dashboardFrame = new dashboardFrame();
-                                frame.dispose();
-//            String userName = userTextfiled.getText();
-//            String password = passwordTextfiled.getText();
-//            try {
-//                Class.forName("com.mysql.cj.jdbc.Driver");
-//                String url = "jdbc:mysql://localhost/securevault";
-//                Connection connection = (Connection) DriverManager.getConnection(url, "root", "Sw@mysql001");
-//
-//                PreparedStatement st = (PreparedStatement) connection.prepareStatement("SELECT * FROM user WHERE name=? AND password=?");
-//                st.setString(1, userName);
-//                st.setString(2, password);
-//
-//                ResultSet rs = st.executeQuery();
-//
-//                if (rs.next()) {
-//                    // Username and password are correct
-//                    JOptionPane.showMessageDialog(btnNewButton, "You have successfully logged in");
-//
-//                    // Open a new form or perform any other action
-//                    EventQueue.invokeLater(new Runnable() {
-//                        public void run() {
-//                            try {
-//                                dashboardFrame dashboardFrame = new dashboardFrame();
+//                    dashboardFrame dashboardFrame = new dashboardFrame();
 //                                frame.dispose();
-//                            } catch (Exception e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                    });
-//                } else {
-//                    // Wrong username or password
-//                    JOptionPane.showMessageDialog(btnNewButton, "Wrong Username & Password");
-//                }
-//            } catch (SQLException sqlException) {
-//                sqlException.printStackTrace();
-//            } catch (ClassNotFoundException ex) {
-//                throw new RuntimeException(ex);
-//            }
+            String userName = userTextfiled.getText();
+            String password = passwordTextfiled.getText();
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                String url = "jdbc:mysql://localhost/securevault";
+                Connection connection = (Connection) DriverManager.getConnection(url, "root", "Sw@mysql001");
+
+                PreparedStatement st = (PreparedStatement) connection.prepareStatement("SELECT * FROM user WHERE name=? AND password=?");
+                st.setString(1, userName);
+                st.setString(2, password);
+
+                ResultSet rs = st.executeQuery();
+
+                if (rs.next()) {
+                    // Username and password are correct
+                    JOptionPane.showMessageDialog(btnNewButton, "You have successfully logged in");
+
+                    // Open a new form or perform any other action
+                    EventQueue.invokeLater(new Runnable() {
+                        public void run() {
+                            try {
+                                dashboardFrame dashboardFrame = new dashboardFrame(userName,password);
+                                frame.dispose();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                } else {
+                    // Wrong username or password
+                    JOptionPane.showMessageDialog(btnNewButton, "Wrong Username & Password");
+                }
+            } catch (SQLException sqlException) {
+                sqlException.printStackTrace();
+            } catch (ClassNotFoundException ex) {
+                throw new RuntimeException(ex);
+            }
         }
 
         if (e.getSource() == Register) {

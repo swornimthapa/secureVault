@@ -5,6 +5,7 @@ import java.awt.*;
 
 public class fileEncryptionFrame {
     JFrame frame = new JFrame("File Encryption");
+
     public fileEncryptionFrame(){
         frame.setResizable(false);
         frame.setSize(900, 500);

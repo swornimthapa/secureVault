@@ -12,13 +12,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class dashboardFrame implements ActionListener {
+    String username;
+    String password;
     JFrame frame = new JFrame("Dash-Board");
 
     JButton openPasswordManagerButton;
     JButton openFileEncryptionButton;
 
 
-    public dashboardFrame(){
+    public dashboardFrame(String username,String password){
+        this.username = username;
+        this.password = password;
+
         frame.setResizable(false);
         frame.setSize(900, 500);
         frame.setLayout(null);
@@ -129,99 +134,6 @@ public class dashboardFrame implements ActionListener {
         clinetpanel2.setBackground(Color.decode("#013221"));
         frame.getContentPane().add(clinetpanel2);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//        UPPER PANEL FOR PASSWORD MANAGER
-//        RoundedLabel passwordManagerLabel = new RoundedLabel("Password Manager",30);
-//        passwordManagerLabel.setBounds(15,15,300,50);
-//        passwordManagerLabel.setFont(new Font("Times New Roman", Font.BOLD, 25));
-//        passwordManagerLabel.setForeground(Color.white);
-//        passwordManagerLabel.setBackground(Color.decode("#660001"));
-//        passwordManagerLabel.setBorder(BorderFactory.createLineBorder(Color.decode("#3D0C01")));
-//        frame.getContentPane().add(passwordManagerLabel);
-//
-//        RoundedPanel passwordManagerMainPanel = new RoundedPanel(30);
-//        passwordManagerMainPanel.setBounds(10,10,500,80);
-//        passwordManagerMainPanel.setBackground(Color.decode("#3D0C01"));
-//        frame.getContentPane().add(passwordManagerMainPanel);
-//
-////        LOWER PANEL FOR PASSWORD MANAGER
-//
-//        RoundedLabel ServiceLabel = new RoundedLabel("Application/Service",30);
-//        ServiceLabel.setBounds(15,125,170,40);
-//        ServiceLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
-//        ServiceLabel.setForeground(Color.white);
-//        ServiceLabel.setBackground(Color.decode("#660001"));
-//        ServiceLabel.setBorder(BorderFactory.createLineBorder(Color.decode("#3D0C01")));
-//        frame.getContentPane().add(ServiceLabel);
-//
-//        JTextField ServiceTextfield = new JTextField();
-//        ServiceTextfield.setFont(new Font("Times New Roman", Font.PLAIN, 15));
-//        ServiceTextfield.setBorder(BorderFactory.createLineBorder(Color.decode("#3D0C01")));
-//        ServiceTextfield.setBounds(190, 125, 200, 40);
-//        frame.getContentPane().add(ServiceTextfield);
-//
-//        RoundedButton  generatePasswordButton = new RoundedButton("Generate Password",30);
-//        generatePasswordButton.setBounds(15, 180, 170, 30);
-//        generatePasswordButton.setFont(new Font("Times New Roman", Font.TYPE1_FONT, 15));
-//        generatePasswordButton.setForeground(Color.white);
-//        generatePasswordButton.setBackground(Color.decode("#660001"));
-//        generatePasswordButton.setBorder(BorderFactory.createLineBorder(Color.decode("#3D0C01")));
-////        generatePasswordButton.addActionListener(this);
-//        frame.getContentPane().add( generatePasswordButton);
-//
-//        JTextField generatedPassword = new JTextField();
-//        generatedPassword.setFont(new Font("Times New Roman", Font.PLAIN, 15));
-//        generatedPassword.setBorder(BorderFactory.createLineBorder(Color.decode("#3D0C01")));
-//        generatedPassword.setBounds(190, 185, 200, 40);
-//        frame.getContentPane().add(generatedPassword);
-//
-//
-//        RoundedButton  savePasswordButton = new RoundedButton("Save Password",30);
-//        savePasswordButton.setBounds(30, 220, 170, 30);
-//        generatePasswordButton.setFont(new Font("Times New Roman", Font.TYPE1_FONT, 15));
-//        savePasswordButton.setForeground(Color.white);
-//        savePasswordButton.setBackground(Color.decode("#660001"));
-//        savePasswordButton.setBorder(BorderFactory.createLineBorder(Color.decode("#3D0C01")));
-////        generatePasswordButton.addActionListener(this);
-//        frame.getContentPane().add( savePasswordButton);
-//
-//        RoundedLabel findPasswordLable = new RoundedLabel("Find Password",30);
-//        findPasswordLable.setBounds(15,270,170,40);
-//        findPasswordLable.setFont(new Font("Times New Roman", Font.BOLD, 15));
-//        findPasswordLable.setForeground(Color.white);
-//        findPasswordLable.setBackground(Color.decode("#660001"));
-//        findPasswordLable.setBorder(BorderFactory.createLineBorder(Color.decode("#3D0C01")));
-//        frame.getContentPane().add(findPasswordLable);
-//
-//        JTextField findPasswordTextfiled = new JTextField();
-//        findPasswordTextfiled.setFont(new Font("Times New Roman", Font.PLAIN, 15));
-//        findPasswordTextfiled.setBorder(BorderFactory.createLineBorder(Color.decode("#3D0C01")));
-//        findPasswordTextfiled.setBounds(190, 270, 200, 40);
-//        frame.getContentPane().add(findPasswordTextfiled);
-//
-//
-//
-//        RoundedPanel passwordManagerPanel = new RoundedPanel(30);
-//        passwordManagerPanel.setBounds(10,120,500,500);
-//        passwordManagerPanel.setBackground(Color.decode("#3D0C01"));
-//        frame.getContentPane().add(passwordManagerPanel);
-
-
     }
 
     @Override
@@ -230,7 +142,7 @@ public class dashboardFrame implements ActionListener {
             EventQueue.invokeLater(new Runnable() {
                         public void run() {
                             try {
-                                passwordManagerFrame passwordManagerFrame = new passwordManagerFrame();
+                                passwordManagerFrame passwordManagerFrame = new passwordManagerFrame(username,password);
                                 frame.dispose();
                             } catch (Exception e) {
                                 e.printStackTrace();
