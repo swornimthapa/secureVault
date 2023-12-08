@@ -155,7 +155,7 @@ public class dashboardFrame implements ActionListener {
             EventQueue.invokeLater(new Runnable() {
                 public void run() {
                     try {
-                        fileEncryptionFrame fileEncryptionFrame = new fileEncryptionFrame();
+                        fileEncryptionFrame fileEncryptionFrame = new fileEncryptionFrame(username,password);
                         frame.dispose();
                     } catch (Exception e) {
                         e.printStackTrace();
