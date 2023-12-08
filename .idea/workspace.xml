@@ -30,7 +30,11 @@
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+<<<<<<< HEAD
     "last_opened_file_path": "D:/BIT-swornim/secureVault",
+=======
+    "last_opened_file_path": "C:/secureVault",
+>>>>>>> 5bdbb5d193b849c77f9d46e8ef166beca40dccf9
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0"
